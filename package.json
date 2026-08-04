@@ -1,0 +1,15 @@
+{
+  "name": "orderflow-copilot-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Repositorio base para capacitación avanzada de GitHub Copilot",
+  "scripts": {
+    "start": "node src/http/server.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
