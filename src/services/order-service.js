@@ -49,9 +49,10 @@ export class OrderService {
       subtotal,
       discount,
       total: roundMoney(subtotal - discount),
-      status: ORDER_STATUS.CONFIRMED,
+      status: ORDER_STATUS.PENDING,
       createdAt: new Date().toISOString(),
-      cancelledAt: null
+      cancelledAt: null,
+      statusHistory: []
     };
 
     return this.orderRepository.save(order);
@@ -68,14 +69,32 @@ export class OrderService {
   async cancelOrder(id) {
     const order = await this.getOrder(id);
 
-    if (order.status !== ORDER_STATUS.PENDING) {
+    if (order.status !== ORDER_STATUS.PENDING && order.status !== ORDER_STATUS.REOPEN) {
       throw new InvalidOrderStateError(
         `Order ${id} cannot be cancelled from status ${order.status}`
       );
     }
 
+    const previousStatus = order.status;
     order.status = ORDER_STATUS.CANCELLED;
     order.cancelledAt = new Date().toISOString();
+    addStatusChangeAudit(order, previousStatus, ORDER_STATUS.CANCELLED);
+
+    return this.orderRepository.save(order);
+  }
+
+  async reopenOrder(id) {
+    const order = await this.getOrder(id);
+
+    if (order.status !== ORDER_STATUS.CANCELLED) {
+      throw new InvalidOrderStateError(
+        `Order ${id} cannot be reopened from status ${order.status}`
+      );
+    }
+
+    order.status = ORDER_STATUS.REOPEN;
+    order.cancelledAt = null;
+    addStatusChangeAudit(order, ORDER_STATUS.CANCELLED, ORDER_STATUS.REOPEN);
 
     return this.orderRepository.save(order);
   }
@@ -136,4 +155,16 @@ function validateCreateOrderInput(input) {
       throw new ValidationError('Item unitPrice must be greater than zero');
     }
   }
+}
+
+function addStatusChangeAudit(order, fromStatus, toStatus) {
+  if (!Array.isArray(order.statusHistory)) {
+    order.statusHistory = [];
+  }
+
+  order.statusHistory.push({
+    from: fromStatus,
+    to: toStatus,
+    changedAt: new Date().toISOString()
+  });
 }

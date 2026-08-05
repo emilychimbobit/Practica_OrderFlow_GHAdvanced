@@ -91,3 +91,76 @@ test('does not cancel a confirmed order', async () => {
 
   await assert.rejects(service.cancelOrder('order-1'), InvalidOrderStateError);
 });
+
+test('reopens a cancelled order and records audit trail', async () => {
+  const repository = new InMemoryOrderRepository([
+    {
+      id: 'order-2',
+      customer: { email: 'user@example.com', tier: 'STANDARD' },
+      items: [{ sku: 'ABC-001', quantity: 1, unitPrice: 20 }],
+      subtotal: 20,
+      discount: 0,
+      total: 20,
+      status: 'CANCELLED',
+      createdAt: '2026-08-01T10:00:00.000Z',
+      cancelledAt: '2026-08-01T10:10:00.000Z',
+      statusHistory: []
+    }
+  ]);
+  const service = new OrderService(repository);
+
+  const reopened = await service.reopenOrder('order-2');
+
+  assert.equal(reopened.status, 'REOPEN');
+  assert.equal(reopened.cancelledAt, null);
+  assert.equal(reopened.statusHistory.length, 1);
+  assert.deepEqual(reopened.statusHistory[0].from, 'CANCELLED');
+  assert.deepEqual(reopened.statusHistory[0].to, 'REOPEN');
+  assert.ok(Number.isNaN(Date.parse(reopened.statusHistory[0].changedAt)) === false);
+});
+
+test('does not reopen an order that is not cancelled', async () => {
+  const repository = new InMemoryOrderRepository([
+    {
+      id: 'order-3',
+      customer: { email: 'user@example.com', tier: 'STANDARD' },
+      items: [{ sku: 'ABC-001', quantity: 1, unitPrice: 20 }],
+      subtotal: 20,
+      discount: 0,
+      total: 20,
+      status: 'PENDING',
+      createdAt: '2026-08-01T10:00:00.000Z',
+      cancelledAt: null,
+      statusHistory: []
+    }
+  ]);
+  const service = new OrderService(repository);
+
+  await assert.rejects(service.reopenOrder('order-3'), InvalidOrderStateError);
+});
+
+test('cancels a reopened order and records both transitions', async () => {
+  const repository = new InMemoryOrderRepository([
+    {
+      id: 'order-4',
+      customer: { email: 'user@example.com', tier: 'STANDARD' },
+      items: [{ sku: 'ABC-001', quantity: 1, unitPrice: 20 }],
+      subtotal: 20,
+      discount: 0,
+      total: 20,
+      status: 'REOPEN',
+      createdAt: '2026-08-01T10:00:00.000Z',
+      cancelledAt: null,
+      statusHistory: [{ from: 'CANCELLED', to: 'REOPEN', changedAt: '2026-08-01T10:11:00.000Z' }]
+    }
+  ]);
+  const service = new OrderService(repository);
+
+  const cancelled = await service.cancelOrder('order-4');
+
+  assert.equal(cancelled.status, 'CANCELLED');
+  assert.equal(cancelled.statusHistory.length, 2);
+  assert.deepEqual(cancelled.statusHistory[1].from, 'REOPEN');
+  assert.deepEqual(cancelled.statusHistory[1].to, 'CANCELLED');
+  assert.ok(Number.isNaN(Date.parse(cancelled.statusHistory[1].changedAt)) === false);
+});

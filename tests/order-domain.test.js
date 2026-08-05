@@ -1,10 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  ORDER_STATUS,
   CUSTOMER_TIER,
   calculateDiscount,
   calculateSubtotal
 } from '../src/domain/order.js';
+
+test('includes REOPEN in allowed order statuses', () => {
+  assert.equal(ORDER_STATUS.REOPEN, 'REOPEN');
+});
 
 test('calculates subtotal from all items', () => {
   const subtotal = calculateSubtotal([
