@@ -49,7 +49,7 @@ export class OrderService {
       subtotal,
       discount,
       total: roundMoney(subtotal - discount),
-      status: ORDER_STATUS.PENDING,
+      status: ORDER_STATUS.CONFIRMED,
       createdAt: new Date().toISOString(),
       cancelledAt: null
     };

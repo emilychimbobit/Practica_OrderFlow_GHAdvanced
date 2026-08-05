@@ -2,7 +2,7 @@
 name: implement-orderflow-change
 description: Implementa un requerimiento aprobado.
 argument-hint: "[requerimiento y criterios]"
-agent: 'orderflow-implementer'
+agent: 'Plan'
 ---
 
 Implementa: `${input:requirement:Describe el cambio aprobado}`
