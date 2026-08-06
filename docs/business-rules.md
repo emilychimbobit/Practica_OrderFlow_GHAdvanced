@@ -23,8 +23,13 @@ Estados permitidos:
 - `PENDING`
 - `CONFIRMED`
 - `CANCELLED`
+- `REOPEN`
 
-Solo un pedido `PENDING` puede cancelarse desde la API actual.
+Transiciones permitidas en el flujo actual:
+
+- `PENDING` -> `CANCELLED`
+- `CANCELLED` -> `REOPEN`
+- `REOPEN` -> `CANCELLED`
 
 ## Observaciones operativas
 

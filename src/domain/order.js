@@ -1,7 +1,8 @@
 export const ORDER_STATUS = Object.freeze({
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  REOPEN: 'REOPEN'
 });
 
 export const CUSTOMER_TIER = Object.freeze({
