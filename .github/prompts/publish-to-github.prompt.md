@@ -20,7 +20,6 @@ Reglas:
    - `git status`;
    - `git branch --show-current`;
    - `git remote -v`;
-   - `gh auth status`.
 3. No publiques secretos, archivos `.env`, claves, certificados, logs ni dependencias.
 4. Si Git todavía no está inicializado:
    - propone `git init -b ${input:defaultBranch:dev}`;
