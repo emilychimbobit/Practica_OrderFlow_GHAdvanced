@@ -1,3 +1,8 @@
+---
+name: orderflow-frontend-integration
+description: Úsala para integrar el frontend React con la API OrderFlow, mapear tipos, manejar errores y ubicar llamadas fetch en la capa de servicios.
+---
+
 # OrderFlow Frontend-API Integration SKILL
 
 Patrón seguro de integración del frontend React con la API OrderFlow backend.
