@@ -1,0 +1,24 @@
+{
+  "palette": [
+    {
+      "color_name": "Yale Blue",
+      "hex": "#1B4079"
+    },
+    {
+      "color_name": "Air Force Blue",
+      "hex": "#4D7C8A"
+    },
+    {
+      "color_name": "Cambridge Blue",
+      "hex": "#7F9C96"
+    },
+    {
+      "color_name": "Cambridge Blue (Light)",
+      "hex": "#8FAD88"
+    },
+    {
+      "color_name": "Mindaro",
+      "hex": "#CBDF90"
+    }
+  ]
+}
